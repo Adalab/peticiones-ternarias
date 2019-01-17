@@ -1,35 +1,28 @@
 import React, { Component } from 'react';
 import TVList from './components/TVList';
 import Loading from './components/Loading';
+import {fetchReasons} from './services/tv';
 import './App.css';
 
-const endpoint = 'http://api.tvmaze.com/search/shows?q='
 class App extends Component {
   constructor(props) {
     super(props);
     
+    this.queryField = React.createRef();
     this.state = {
       query: '',
       results: []
     }
-    this.handleTVName = this.handleTVName.bind(this);
     this.getTVShows = this.getTVShows.bind(this);
   }
 
-  handleTVName(e) {
-    const name = e.currentTarget.value;
-    this.setState({
-      query: name
-    });
-  }
-
   getTVShows() {
-
-    fetch(endpoint + this.state.query)
-      .then(res=>res.json())
+    const query = this.queryField.current.value;
+      fetchReasons(query)
       .then(tv=> {
         this.setState({
-          results: tv
+          results: tv,
+          query: query
         });
       })
   }
@@ -40,7 +33,7 @@ class App extends Component {
       <div className="app">
 
         <div className="search">
-          <input type="text" onKeyUp={this.handleTVName}/>
+          <input type="text" ref={this.queryField} />
           <button onClick={this.getTVShows}>Search</button>
         </div>
 
