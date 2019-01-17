@@ -8,49 +8,43 @@ class App extends Component {
   constructor(props) {
     super(props);
     
-    this.field = React.createRef();
     this.state = {
       query: '',
-      results: [],
-      active: false
+      results: []
     }
+    this.handleTVName = this.handleTVName.bind(this);
     this.getTVShows = this.getTVShows.bind(this);
   }
 
+  handleTVName(e) {
+    const name = e.currentTarget.value;
+    this.setState({
+      query: name
+    });
+  }
+
   getTVShows() {
-    const query = this.field.current.value;
-    fetch(endpoint + query)
+
+    fetch(endpoint + this.state.query)
       .then(res=>res.json())
       .then(tv=> {
         this.setState({
-          results: tv,
-          query: query,
-          active: true
+          results: tv
         });
       })
   }
 
   render() {
 
-    let loquesea;
-
-    if (this.state.active === true && this.state.results.length < 1 && this.state.query === '') {
-      loquesea = <Loading />;
-    } else if (this.state.active === true && this.state.results.length < 1 && this.state.query !== '') {
-      loquesea = <p>Criatura, mal todo</p>;
-    } else if (this.state.active === true && this.state.results.length > 1) {
-      loquesea = <TVList results={this.state.results} />;
-    }
-
     return (
       <div className="app">
 
         <div className="search">
-          <input type="text" ref={this.field}/>
+          <input type="text" onKeyUp={this.handleTVName}/>
           <button onClick={this.getTVShows}>Search</button>
         </div>
 
-      {loquesea}        
+        {(this.state.results.length < 1 && this) ? <Loading /> : <TVList results={this.state.results} /> }
         
         
         
